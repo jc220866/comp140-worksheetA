@@ -7,6 +7,8 @@ FTerminalGame game; // Initialize game
 
 int main()
 {
+	PrintIntro();
+
 	do
 	{
 		game.difficulty = game.ChooseDifficulty();
@@ -16,6 +18,15 @@ int main()
 	while (bAskToPlayAgain());
 	
 	return 0;
+}
+
+// Prompts the player to increase the size of their cmd.exe window for optimal player experience
+void PrintIntro()
+{
+	std::cout << "				PLEASE INCREASE THE WIDTH OF THE \
+GAME WINDOW UNTIL THIS LINE FITS ON ONE LINE			" << std::endl;
+	std::cout << "----------------------------------------------------------------------\
+----------------------------------------------------------------------" << std::endl;
 }
 
 void SetupGame(EDifficulty difficulty)
@@ -28,19 +39,6 @@ void SetupGame(EDifficulty difficulty)
 
 	AddSecretWord(wordList);
 	AddDummyWords(wordList);
-}
-
-void PlayGame()
-{
-	PrintGameScreen();
-
-	std::getline(std::cin, game.PlayerInput);
-	int score = game.SubmitGuess(  game.PlayerInput );
-	std::cout << score;
-	// TODO: implement the rest of the game
-
-
-	return;
 }
 
 void AddSecretWord(FWordList wordList)
@@ -71,13 +69,52 @@ void AddDummyWords(FWordList wordList)
 	}
 }
 
+void PlayGame()
+{
+	PrintGameScreen();
+
+	do 
+	{
+		std::getline( std::cin, game.PlayerInput );
+		game.guessStatus = game.CheckGuess( game.PlayerInput );
+		game.guessValid = HandleGuess( game.PlayerInput );
+	}
+	while ( ! game.guessValid );
+
+	// TODO: implement the rest of the game
+
+	return;
+}
+
 void PrintGameScreen()
 {
 	// Display all words
 	for each (std::string word in game.activeWords)
 	{
 		std::cout << word << std::endl;
+
+		// Sleep for 50 milliseconds before printing the next word
+		std::this_thread::sleep_for(std::chrono::milliseconds(50));
 	}
+	std::cout << std::endl << game.GetMessageToPlayer() << std::endl;
+}
+
+bool HandleGuess(std::string playerGuess)
+{
+	switch (game.guessStatus)
+	{
+	case EGuessStatus::OK:
+		// submit guess
+		return true;
+
+	case EGuessStatus::Brackets:
+		// submit brackets
+		return true;
+
+	case EGuessStatus::Invalid:
+		return false;
+	}
+	return false;
 }
 
 // Uses the first letter of the player's input to determine whether they want to play another game.

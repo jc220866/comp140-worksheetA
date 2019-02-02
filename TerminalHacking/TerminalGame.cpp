@@ -4,6 +4,11 @@
 int FTerminalGame::GetWordLength() { return wordLength; }
 int FTerminalGame::GetNumberOfWords() { return numberOfWords; }
 
+std::string FTerminalGame::GetMessageToPlayer()
+{
+	return messageToPlayer;
+}
+
 
 FTerminalGame::FTerminalGame() {  }
 
@@ -60,7 +65,12 @@ EDifficulty FTerminalGame::ChooseDifficulty()
 
 		std::getline(std::cin, PlayerInput);
 	} 
-	while (oneThroughFive.find(PlayerInput) == std::string::npos); // This will prompt the player to enter until we see a number between 1 and 5.
+	while // prompt the player to enter until we see a number between 1 and 5.
+		(		
+		(oneThroughFive.find(PlayerInput) == std::string::npos) 
+		|| // or
+		(PlayerInput == "")
+		); 
 
 	if (PlayerInput == "1")
 	{
@@ -82,11 +92,10 @@ EDifficulty FTerminalGame::ChooseDifficulty()
 	{
 		return EDifficulty::Very_Hard;
 	}
-
 	return EDifficulty::Average;
 }
 
-int FTerminalGame::SubmitGuess(std::string playerGuess)
+EGuessStatus FTerminalGame::CheckGuess(std::string playerGuess)
 {
 	int likeness = 0;
 
@@ -108,6 +117,31 @@ int FTerminalGame::SubmitGuess(std::string playerGuess)
 			likeness++; 
 		}
 	}
+	return EGuessStatus::OK;
+}
 
-	return likeness;
+void FTerminalGame::SubmitGuess()
+{
+}
+
+void FTerminalGame::SubmitBrackets()
+{
+	// To get here, the player must have submitted a valid bracket and punctuation combo
+	// Roll a 4 sided dice. 
+
+	// If don't we land a 4, 
+		// we remove a random word from the list of dummy words
+		// RemoveDummyWord()
+			// this will basically remove a word from the list, but if it's the secret word or it starts with an open bracket, don't
+		// set the player message to 'Dud removed: [REMOVED-WORD]'
+
+		// Add the [REMOVED-WORD] to a list of removed words?
+			// Have the PrintGameScreen comb through this removed words list, replacing removed words (and bracket combos) with underscores
+			// TODO keep in mind that in FALLOUT, words (but not bracket combos) wrap around to the next line (even into the second section)\
+				// For this reason, whatever we print will have to be completely separate from what really exists
+				// We will have to just print everything one character at a time (oh if only I could delay stuff by a millisecond)
+
+	// Otherwise
+		//we'll reset the player's lives back to 4.
+		// set the player message to "Tries reset."
 }

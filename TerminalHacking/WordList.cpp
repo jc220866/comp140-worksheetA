@@ -34,7 +34,6 @@ FWordList::FWordList(int wordLength)
 					break;
 				}
 			}
-
 			if (bIsValid)
 			{
 				validWords.push_back(word); // If it's a good word, add it to the list.
@@ -46,7 +45,6 @@ FWordList::FWordList(int wordLength)
 // Returns a string containing a word randomly selected from the loaded .txt file
 std::string FWordList::chooseRandomWord()
 {
-
 	int index = rand() % validWords.size();
 	return validWords[index];
 }

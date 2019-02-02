@@ -34,11 +34,13 @@ enum class EGuessStatus
 
 
 // Declarations of all functions defined in 'main.cpp'
+void PrintIntro();
 void SetupGame(EDifficulty difficulty);
 void PlayGame();
 void AddSecretWord(FWordList wordList);
 void AddDummyWords(FWordList wordList);
 void PrintGameScreen();
+bool HandleGuess(std::string playerGuess);
 bool bAskToPlayAgain();
 
 class FTerminalGame 
@@ -55,21 +57,31 @@ public:
 
 	int GetWordLength();
 	int GetNumberOfWords();
-
-	EDifficulty difficulty = EDifficulty::Average;
-	EDifficulty ChooseDifficulty();
+	std::string GetMessageToPlayer();
 
 	std::string secretWord;
 	std::string PlayerInput;
 
-	int SubmitGuess(std::string playerGuess);
+	EDifficulty difficulty = EDifficulty::Average;
+	EDifficulty ChooseDifficulty();
+
+	EGuessStatus guessStatus = EGuessStatus::Invalid;
+	EGuessStatus CheckGuess(std::string playerGuess);
+	bool guessValid = false;
+
+	void SubmitGuess();
+	void SubmitBrackets();
 
 private:
 
 	int wordLength;
 	int numberOfWords;
 
+	// Used to select difficulty levels at the start of the game.
 	std::string oneThroughFive = "12345";
+
+	// A 'get-able' message sent to the player depending on the validity of their guess.
+	std::string messageToPlayer = "Hello world!";
 
 };
 
