@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "WordList.h"
+#include "TerminalGame.h"
 
 const std::string wordFileName("words.txt");
 

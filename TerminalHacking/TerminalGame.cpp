@@ -5,7 +5,7 @@ FTerminalGame::FTerminalGame() { Reset(); }
 
 void FTerminalGame::Reset()
 {
-
+	allWords.clear();
 }
 
 int FTerminalGame::GetWordLength()

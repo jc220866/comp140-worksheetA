@@ -1,47 +1,59 @@
 #include "stdafx.h"
-#include "WordList.h"
 #include "TerminalGame.h"
 
-FTerminalGame game;
+FTerminalGame game; // Initialize game
 
 int main()
 {
-	// Initialise word list
-	FWordList words(game.GetWordLength());
+	game.Reset();
 
+	// Initialise list of appropriate possible words for chosen difficulty
+	FWordList wordList(game.GetWordLength());
+
+	AddSecretWord(wordList);
+	AddDummyWords(wordList);
+	PrintGameScreen();
+
+	// TODO: implement the rest of the game
+
+	return 0;
+}
+
+void AddSecretWord(FWordList wordList)
+{
 	// Seed the random number generator with the current time,
 	// to ensure different results each time the program is run
 	srand(static_cast<unsigned int>(time(nullptr)));
 
 	// Choose secret word
-	std::string secretWord = words.getRandomWord();
-
-	// Create a set to hold the list of options
-	std::set<std::string> options;
+	std::string secretWord = wordList.getRandomWord();
 
 	// Put the secret word in the set
-	options.insert(secretWord);
+	game.allWords.insert(secretWord);
 
-	// Fill the set with more words
-	// Using a set for options guarantees that the elements are all different
-	while (options.size() < game.GetNumberOfWords())
-	{
-		std::string word = words.getRandomWord();
-		options.insert(word);
-	}
 
 
 	// Display secret word at the top of the screen
 	std::cout << secretWord << std::endl << std::endl;
 
 
+}
+
+void AddDummyWords(FWordList wordList)
+{
+	// Fill the set with more words
+	while (game.allWords.size() < game.GetNumberOfWords())
+	{
+		std::string word = wordList.getRandomWord();
+		game.allWords.insert(word);
+	}
+}
+
+void PrintGameScreen()
+{
 	// Display all words
-	for each (std::string word in options)
+	for each (std::string word in game.allWords)
 	{
 		std::cout << word << std::endl;
 	}
-
-	// TODO: implement the rest of the game
-
-	return 0;
 }
