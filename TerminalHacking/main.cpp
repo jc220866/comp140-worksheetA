@@ -66,20 +66,17 @@ void AddDummyWords(FWordList wordList)
 
 void PlayGame()
 {
-	// A likeness of -1 tells the PrintGameScreen function not to refer to the likeness at all
-	int likeness = -1;
-
 	do 
 	{
-		PrintGameScreen(likeness);
+		PrintGameScreen();
 		GetPlayerGuess();
 		CheckGuess();
-		likeness = HandleGuess();
+		HandleGuess();
 	}
 	while ((game.livesLeft > 0) && (game.guessStatus != EGuessStatus::Winner));
 }
 
-void PrintGameScreen(int likeness)
+void PrintGameScreen()
 {
 	// Display all words
 	for each (std::string word in game.activeWords)
@@ -91,7 +88,7 @@ void PrintGameScreen(int likeness)
 	}
 
 	std::cout << game.playerInput << game.messageToPlayer;
-	if (likeness >= 0) { std::cout << likeness; }
+	if (game.likeness >= 0) { std::cout << game.likeness; }
 	std::cout << std::endl;
 
 	std::cout << "Lives left: " << game.livesLeft << std::endl;
@@ -214,46 +211,50 @@ bool bGuessEndsWithBrackets()
 }
 
 // Returns likeness for a valid guess, returns a negative number otherwise
-int HandleGuess()
+void HandleGuess()
 {
 	switch (game.guessStatus)
 	{
 	case EGuessStatus::OK:
 		game.livesLeft--;
 		game.messageToPlayer = ": Likeness = ";
-		return SubmitGuess(); // return likeness score
+		SubmitGuess();
+		break;
 
 	case EGuessStatus::Winner:
 		// Skip guess feedback, go straight to end screen
 		game.messageToPlayer = "";
-		return -1;
+		break;
 
 	case EGuessStatus::Good_Brackets:
 		game.livesLeft--;
 		SubmitBrackets(); // decide whether to reset the lives or simply remove a dud
-		return -1;
+		game.likeness = -1;
+		break;
 
 	case EGuessStatus::Bad_Brackets:
 		// Failed attempt at a bracket combo, take a life from the player anyway
 		game.livesLeft--;
 		game.messageToPlayer = ": Failed hack attempt detected, deducting life.";
 		// game.messageToPlayer = ": ACCESS DENIED"; - not enough feedback?
-		return -1;
+		game.likeness = -1;
+		break;
 
 	case EGuessStatus::Invalid:
 		game.messageToPlayer = ": Invalid guess. Try again.";
-		return -1;
+		game.likeness = -1;
+		break;
 
 	case EGuessStatus::Wrong_Length:
 		game.messageToPlayer = ": Incorrect word length. Try again.";
-		return -1;
+		game.likeness = -1;
+		break;
 	}
-	return -1;
 }
 
-int SubmitGuess()
+void SubmitGuess()
 {
-	int likeness = 0;
+	game.likeness = 0;
 
 	// for every character in Guess, compare it to the secret word
 	for (int i = 0; i < game.GetWordLength(); i++)
@@ -262,10 +263,9 @@ int SubmitGuess()
 		if (toupper(game.playerInput[i]) == game.secretWord[i])
 		{
 			// increment (add 1 to) the likeness score
-			likeness++;
+			game.likeness++;
 		}
 	}
-	return likeness;
 }
 
 void SubmitBrackets()
@@ -301,6 +301,8 @@ void PrintPostGameFeedback()
 	}
 	else
 	{
+		std::cout << game.playerInput << ": Likeness = " << game.likeness << std::endl;
+		std::cout << "Lives left: " << game.livesLeft << std::endl;
 		std::cout << "oof" << std::endl;
 	}
 }

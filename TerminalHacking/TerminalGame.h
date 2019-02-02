@@ -41,16 +41,15 @@ void SetupGame();
 void AddSecretWord(FWordList wordList);
 void AddDummyWords(FWordList wordList);
 void PlayGame();
-void PrintGameScreen(int likeness);
+void PrintGameScreen();
 void GetPlayerGuess();
 void CheckGuess();
 void CapitalizePlayerGuess();
 bool bGuessStartsWithBrackets();
 bool bGuessEndsWithBrackets();
-int HandleGuess();
-int SubmitGuess();
+void HandleGuess();
+void SubmitGuess();
 void SubmitBrackets();
-void LaughAtPlayer(); // TODO might be inappropriate
 void PrintPostGameFeedback();
 bool bAskToPlayAgain();
 
@@ -70,6 +69,8 @@ public:
 
 	int GetWordLength();
 	int GetNumberOfWords();
+
+	int likeness = -1;
 	int livesLeft;
 
 	std::string playerInput;
