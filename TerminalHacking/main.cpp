@@ -48,8 +48,10 @@ void AddSecretWord(FWordList wordList)
 	// Put the secret word in the set
 	game.activeWords.insert(game.secretWord);
 
+
+
 	// Display secret word at the top of the screen
-	std::cout << game.secretWord << std::endl << std::endl;
+	std::cout << "Secret word: " << game.secretWord << std::endl << std::endl;
 }
 
 void AddDummyWords(FWordList wordList)
@@ -64,6 +66,7 @@ void AddDummyWords(FWordList wordList)
 
 void PlayGame()
 {
+	// A likeness of -1 tells the PrintGameScreen function not to refer to the likeness at all
 	int likeness = -1;
 
 	do 
@@ -73,7 +76,7 @@ void PlayGame()
 		CheckGuess();
 		likeness = HandleGuess();
 	}
-	while (game.livesLeft > 0);
+	while ((game.livesLeft > 0) && (game.guessStatus != EGuessStatus::Winner));
 }
 
 void PrintGameScreen(int likeness)
@@ -86,12 +89,14 @@ void PrintGameScreen(int likeness)
 		// Sleep for 50 milliseconds before printing the next word
 		std::this_thread::sleep_for(std::chrono::milliseconds(50));
 	}
-	std::cout << game.playerInput << game.messageToPlayer << std::endl;
 
-	// if likeness >= 0
-		// print likeness on the end of the messageToPlayer
+	std::cout << game.playerInput << game.messageToPlayer;
+	if (likeness >= 0) { std::cout << likeness; }
+	std::cout << std::endl;
 
-	// TODO add a new message for each bracket combo or valid guess, don't add a new message for each invalid guess
+	std::cout << "Lives left: " << game.livesLeft << std::endl;
+
+	// TODO add a new lingering message for each bracket combo or valid guess, don't add a new message for each invalid guess
 		// This could be accomplished by incrementing a 'line number' integer every new line
 		// then having a set of previous valid messages which we add to from the bottom, pushing old ones up
 		// we would have to fill it with empty space but, it could work
@@ -107,8 +112,6 @@ void GetPlayerGuess()
 // Checks if the guess is in the list of words (or in the list of bracket combos) and capitalizes it.
 void CheckGuess()
 {
-	// Check if the player's guess starts with an open bracket and ends with a closed bracket
-	
 	if (bGuessStartsWithBrackets() && bGuessEndsWithBrackets())
 	{
 		// TODO brackets and stuff
@@ -117,27 +120,7 @@ void CheckGuess()
 		return;
 	}
 
-	// if playerGuess starts with a bracket
-		// if playerGuess in the list of valid bracket combos
-			// game.guessStatus = EGuessStatus::Good_Brackets;
-		// else 
-			// game.guessStatus = EGuessStatus::Bad_Brackets;
-		// return;
-	
-	std::string caps = "";
-	for (auto c : game.playerInput)
-	{
-		if ( ! isalpha( c )) // Reject guess if any non-alphabet characters found
-		{
-			game.guessStatus = EGuessStatus::Invalid;
-			return;
-		}
-
-		c = toupper( c );
-		caps = caps + c;
-	}
-	// Turn the player's input into capital letters
-	game.playerInput = caps;
+	CapitalizePlayerGuess();
 
 	if ( game.playerInput == game.secretWord )
 	{
@@ -158,7 +141,18 @@ void CheckGuess()
 		return;
 	}
 
-	game.guessStatus = EGuessStatus::Unrecognized;
+	game.guessStatus = EGuessStatus::Invalid;
+}
+
+void CapitalizePlayerGuess()
+{
+	std::string caps = "";
+	for (auto c : game.playerInput)
+	{
+		c = toupper(c);
+		caps = caps + c;
+	}
+	game.playerInput = caps;
 }
 
 bool bGuessStartsWithBrackets()
@@ -225,9 +219,9 @@ int HandleGuess()
 	switch (game.guessStatus)
 	{
 	case EGuessStatus::OK:
-		// Take a life from the player, return likeness score
+		game.livesLeft--;
 		game.messageToPlayer = ": Likeness = ";
-		return SubmitGuess();
+		return SubmitGuess(); // return likeness score
 
 	case EGuessStatus::Winner:
 		// Skip guess feedback, go straight to end screen
@@ -235,27 +229,23 @@ int HandleGuess()
 		return -1;
 
 	case EGuessStatus::Good_Brackets:
-		// Take a life from the player, decide whether the brackets reset the lives or simply remove a dud
-		SubmitBrackets();
+		game.livesLeft--;
+		SubmitBrackets(); // decide whether to reset the lives or simply remove a dud
 		return -1;
 
 	case EGuessStatus::Bad_Brackets:
 		// Failed attempt at a bracket combo, take a life from the player anyway
-		LaughAtPlayer();
-		return -1;
-
-		// Statuses below this line do not remove a life from the player
-
-	case EGuessStatus::Wrong_Length:
-		game.messageToPlayer = ": Incorrect word length. Try again.";
+		game.livesLeft--;
+		game.messageToPlayer = ": Failed hack attempt detected, deducting life.";
+		// game.messageToPlayer = ": ACCESS DENIED"; - not enough feedback?
 		return -1;
 
 	case EGuessStatus::Invalid:
 		game.messageToPlayer = ": Invalid guess. Try again.";
 		return -1;
 
-	case EGuessStatus::Unrecognized:
-		game.messageToPlayer = ": That word is not present. Try again.";
+	case EGuessStatus::Wrong_Length:
+		game.messageToPlayer = ": Incorrect word length. Try again.";
 		return -1;
 	}
 	return -1;
@@ -302,18 +292,11 @@ void SubmitBrackets()
 		// set the player message to "Tries Reset."
 }
 
-// Punish the player for failing to enter a bracket combo properly, by removing a life and laughing at them
-void LaughAtPlayer()
-{
-	game.livesLeft--;
-
-	std::cout << "haha" << std::endl;
-}
-
 void PrintPostGameFeedback()
 {
 	if (game.livesLeft > 0)
 	{
+		std::cout << game.playerInput << ": Likeness = " << game.GetWordLength() << std::endl;
 		std::cout << "you the winner" << std::endl;
 	}
 	else

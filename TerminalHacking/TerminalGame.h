@@ -1,5 +1,24 @@
 #pragma once
 
+enum class EDifficulty
+{
+	Very_Easy,
+	Easy,
+	Average,
+	Hard,
+	Very_Hard
+};
+
+enum class EGuessStatus
+{
+	OK,
+	Invalid,
+	Winner,
+	Wrong_Length,
+	Good_Brackets,
+	Bad_Brackets
+};
+
 class FWordList
 {
 public:
@@ -25,6 +44,7 @@ void PlayGame();
 void PrintGameScreen(int likeness);
 void GetPlayerGuess();
 void CheckGuess();
+void CapitalizePlayerGuess();
 bool bGuessStartsWithBrackets();
 bool bGuessEndsWithBrackets();
 int HandleGuess();
@@ -33,26 +53,6 @@ void SubmitBrackets();
 void LaughAtPlayer(); // TODO might be inappropriate
 void PrintPostGameFeedback();
 bool bAskToPlayAgain();
-
-enum class EDifficulty
-{
-	Very_Easy,
-	Easy,
-	Average,
-	Hard,
-	Very_Hard
-};
-
-enum class EGuessStatus
-{
-	Good_Brackets,
-	Bad_Brackets,
-	OK,
-	Winner,
-	Invalid,
-	Wrong_Length,
-	Unrecognized
-};
 
 class FTerminalGame 
 {
