@@ -1,8 +1,9 @@
 #include "stdafx.h"
 #include "TerminalGame.h"
 
-const std::string wordFileName("words.txt");
+const std::string wordFileName("word-list.txt");
 
+// Constructor. Reads the .txt file and fills a vector with words of the appropriate length.
 FWordList::FWordList(int wordLength)
 {
 	std::ifstream wordFile(wordFileName);
@@ -20,7 +21,7 @@ FWordList::FWordList(int wordLength)
 		{
 			// Scan through the line, converting each character to upper case.
 			// If a non-alphabet character is encountered, reject the word.
-			bool isValid = true;
+			bIsValid = true;
 			for (int i = 0; i < word.length(); i++)
 			{
 				if (isalpha(word[i]))
@@ -29,21 +30,23 @@ FWordList::FWordList(int wordLength)
 				}
 				else
 				{
-					isValid = false;
+					bIsValid = false;
 					break;
 				}
 			}
 
-			if (isValid)
+			if (bIsValid)
 			{
-				words.push_back(word); // If it's a good word, add it to the list.
+				validWords.push_back(word); // If it's a good word, add it to the list.
 			}
 		}
 	}
 }
 
-std::string FWordList::getRandomWord()
+// Returns a string containing a word randomly selected from the loaded .txt file
+std::string FWordList::chooseRandomWord()
 {
-	int index = rand() % words.size();
-	return words[index];
+
+	int index = rand() % validWords.size();
+	return validWords[index];
 }
