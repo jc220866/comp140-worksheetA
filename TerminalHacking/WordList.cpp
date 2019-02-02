@@ -34,6 +34,7 @@ FWordList::FWordList(int wordLength)
 					break;
 				}
 			}
+
 			if (bIsValid)
 			{
 				validWords.push_back(word); // If it's a good word, add it to the list.
