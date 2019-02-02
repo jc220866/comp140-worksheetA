@@ -25,6 +25,8 @@ void PlayGame();
 void PrintGameScreen(int likeness);
 void GetPlayerGuess();
 void CheckGuess();
+bool bGuessStartsWithBrackets();
+bool bGuessEndsWithBrackets();
 int HandleGuess();
 int SubmitGuess();
 void SubmitBrackets();
@@ -43,10 +45,13 @@ enum class EDifficulty
 
 enum class EGuessStatus
 {
-	Invalid,
 	Good_Brackets,
 	Bad_Brackets,
-	OK
+	OK,
+	Winner,
+	Invalid,
+	Wrong_Length,
+	Unrecognized
 };
 
 class FTerminalGame 
@@ -69,12 +74,13 @@ public:
 
 	std::string playerInput;
 
+	// Defaulted to 'Average'
 	EDifficulty difficulty = EDifficulty::Average;
 	EDifficulty ChooseDifficulty();
 
 	EGuessStatus guessStatus = EGuessStatus::Invalid;
 	
-	std::string messageToPlayer = "Hello world!";
+	std::string messageToPlayer = "";
 
 private:
 

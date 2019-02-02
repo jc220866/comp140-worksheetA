@@ -4,9 +4,9 @@
 int FTerminalGame::GetWordLength() { return wordLength; }
 int FTerminalGame::GetNumberOfWords() { return numberOfWords; }
 
+FTerminalGame::FTerminalGame() { Reset( difficulty ); } // Constructor
 
-FTerminalGame::FTerminalGame() {  }
-
+// Prompts player to choose difficulty, checks valid input, returns a difficulty enum
 EDifficulty FTerminalGame::ChooseDifficulty()
 {
 	do
@@ -19,7 +19,8 @@ EDifficulty FTerminalGame::ChooseDifficulty()
 		std::cout << "5 = Very Hard" << std::endl;;
 
 		std::getline(std::cin, playerInput);
-	} while // prompt the player to enter until we see a number between 1 and 5.
+	} 
+	while // prompt the player to enter until we see a number between 1 and 5.
 		(
 			(oneThroughFive.find(playerInput) == std::string::npos)
 			|| // or
@@ -49,6 +50,7 @@ EDifficulty FTerminalGame::ChooseDifficulty()
 	return EDifficulty::Average;
 }
 
+// Takes in a difficulty parameter to choose longer words for higher difficulty settings
 void FTerminalGame::Reset( EDifficulty difficulty )
 {
 	// Seed the random number generator with the current time,
@@ -58,6 +60,7 @@ void FTerminalGame::Reset( EDifficulty difficulty )
 	activeWords.clear(); // empty the set containing the secret word and dummy words.
 
 	playerInput = "";
+	messageToPlayer = "";
 
 	constexpr int MAX_LIVES = 4;
 	livesLeft = MAX_LIVES;
@@ -91,6 +94,6 @@ void FTerminalGame::Reset( EDifficulty difficulty )
 		break;
 	}
 
-	// TODO random selection (coin toss?) for word length
-	// TODO if lower bound of word length, choose upper bound of word count
+	// TODO random selection for word length based on difficulty thresholds
+	// TODO if lower bound of word length, choose upper bound of word count and vice versa (or average : average)
 }

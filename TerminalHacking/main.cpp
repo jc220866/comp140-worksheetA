@@ -3,8 +3,6 @@
 
 FTerminalGame game; // Initialize game
 
-// TODO: Add bracket pairs which have a 1/4 chance to reset tries, otherwise they remove a word (not the secret word) from the screen and the set
-
 int main()
 {
 	PrintIntro();
@@ -106,32 +104,119 @@ void GetPlayerGuess()
 	std::getline(std::cin, game.playerInput);
 }
 
-// Checks if the guess is in the list of words (or in the list of bracket combos) then capitalizes it.
+// Checks if the guess is in the list of words (or in the list of bracket combos) and capitalizes it.
 void CheckGuess()
 {
+	// Check if the player's guess starts with an open bracket and ends with a closed bracket
+	
+	if (bGuessStartsWithBrackets() && bGuessEndsWithBrackets())
+	{
+		// TODO brackets and stuff
+
+		game.guessStatus = EGuessStatus::Bad_Brackets;
+		return;
+	}
+
 	// if playerGuess starts with a bracket
 		// if playerGuess in the list of valid bracket combos
 			// game.guessStatus = EGuessStatus::Good_Brackets;
 		// else 
 			// game.guessStatus = EGuessStatus::Bad_Brackets;
 		// return;
-			
-	// if playerGuess NOT in the list of valid guesses
-		// game.guessStatus = EGuessStatus::Invalid;
-		// return;
-
-	// turn the player's input into capital letters
+	
 	std::string caps = "";
-
-	for (auto Character : game.playerInput)
+	for (auto c : game.playerInput)
 	{
-		Character = toupper(Character);
+		if ( ! isalpha( c )) // Reject guess if any non-alphabet characters found
+		{
+			game.guessStatus = EGuessStatus::Invalid;
+			return;
+		}
 
-		caps = caps + Character;
+		c = toupper( c );
+		caps = caps + c;
 	}
+	// Turn the player's input into capital letters
 	game.playerInput = caps;
 
-	game.guessStatus = EGuessStatus::OK;
+	if ( game.playerInput == game.secretWord )
+	{
+		game.guessStatus = EGuessStatus::Winner;
+		return;
+	}
+
+	if ( game.playerInput.length() != game.GetWordLength() )
+	{
+		game.guessStatus = EGuessStatus::Wrong_Length;
+		return;
+	}
+
+	// Simplest way of checking if a specific element is in a set or not
+	if ( game.activeWords.count( game.playerInput ))
+	{
+		game.guessStatus = EGuessStatus::OK;
+		return;
+	}
+
+	game.guessStatus = EGuessStatus::Unrecognized;
+}
+
+bool bGuessStartsWithBrackets()
+{
+	std::string openParentheses = "(";
+	std::string openSquigglies = "{";
+	std::string openBrackets = "[";
+	std::string openChevrons = "<";
+
+	if ( game.playerInput.find( openParentheses ) == 0 )
+	{
+		return true;
+	}
+	else if ( game.playerInput.find( openSquigglies ) == 0 )
+	{
+		return true;
+	}
+	else if ( game.playerInput.find( openBrackets ) == 0 )
+	{
+		return true;
+	}
+	else if ( game.playerInput.find( openChevrons ) == 0 )
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+bool bGuessEndsWithBrackets()
+{
+	std::string closedParentheses = ")";
+	std::string closedSquigglies = "}";
+	std::string closedBrackets = "]";
+	std::string closedChevrons = ">";
+
+	if ( game.playerInput.find( closedParentheses ) == ( game.playerInput.length() - 1 ))
+	{
+		return true;
+	}
+	else if ( game.playerInput.find( closedSquigglies ) == ( game.playerInput.length() - 1 ))
+	{
+		return true;
+	}
+	else if ( game.playerInput.find( closedBrackets ) == ( game.playerInput.length() - 1 ))
+	{
+		return true;
+	}
+	else if ( game.playerInput.find( closedChevrons ) == ( game.playerInput.length() - 1 ))
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
 }
 
 // Returns likeness for a valid guess, returns a negative number otherwise
@@ -140,18 +225,37 @@ int HandleGuess()
 	switch (game.guessStatus)
 	{
 	case EGuessStatus::OK:
+		// Take a life from the player, return likeness score
 		game.messageToPlayer = ": Likeness = ";
 		return SubmitGuess();
 
+	case EGuessStatus::Winner:
+		// Skip guess feedback, go straight to end screen
+		game.messageToPlayer = "";
+		return -1;
+
 	case EGuessStatus::Good_Brackets:
+		// Take a life from the player, decide whether the brackets reset the lives or simply remove a dud
 		SubmitBrackets();
 		return -1;
 
 	case EGuessStatus::Bad_Brackets:
+		// Failed attempt at a bracket combo, take a life from the player anyway
 		LaughAtPlayer();
 		return -1;
 
+		// Statuses below this line do not remove a life from the player
+
+	case EGuessStatus::Wrong_Length:
+		game.messageToPlayer = ": Incorrect word length. Try again.";
+		return -1;
+
 	case EGuessStatus::Invalid:
+		game.messageToPlayer = ": Invalid guess. Try again.";
+		return -1;
+
+	case EGuessStatus::Unrecognized:
+		game.messageToPlayer = ": That word is not present. Try again.";
 		return -1;
 	}
 	return -1;
@@ -176,6 +280,8 @@ int SubmitGuess()
 
 void SubmitBrackets()
 {
+	// TODO: Add bracket pairs which have a 1/4 chance to reset tries, otherwise they remove a word (not the secret word) from the screen and the set
+
 	// To get here, the player must have submitted a valid bracket and punctuation combo
 	// Roll a 4 sided dice. 
 
@@ -187,7 +293,7 @@ void SubmitBrackets()
 
 		// Add the [REMOVED-WORD] to a list of removed words?
 			// Have the PrintGameScreen comb through this removed words list, replacing removed words (and bracket combos) with underscores
-			// TODO keep in mind that in FALLOUT, words (but not bracket combos) wrap around to the next line (even into the second section)\
+			// TODO keep in mind that in FALLOUT, words (but not bracket combos) wrap around to the next line (even into the second section)
 				// For this reason, whatever we print will have to be completely separate from what really exists
 				// We will have to just print everything one character at a time (oh if only I could delay stuff by a millisecond)
 
@@ -225,9 +331,9 @@ bool bAskToPlayAgain()
 	do
 	{
 		std::cout << "Do you want to play again?" << std::endl;;
-
 		std::getline(std::cin, playerInput);
-		FirstLetter = tolower(playerInput[0]); // Changing FirstLetter to lowercase allows us to accept mixed-case "Y" and "y" as valid input.
+
+		FirstLetter = tolower(playerInput[0]); // Changing FirstLetter to lowercase allows us to accept mixed-case "Y" and "y" as valid input
 	} 
 	while ((FirstLetter != "y") && (FirstLetter != "n")); // This will prompt the player to enter until they give us a Y or an N.
 
