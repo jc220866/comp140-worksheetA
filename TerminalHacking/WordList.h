@@ -1,12 +1,14 @@
 #pragma once
 
-class WordList
+class FWordList
 {
 public:
-	WordList(int wordLength);
+
+	FWordList(int wordLength);
 
 	std::string getRandomWord();
 
 private:
+
 	std::vector<std::string> words;
 };

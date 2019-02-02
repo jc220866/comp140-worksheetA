@@ -3,7 +3,7 @@
 
 const std::string wordFileName("words.txt");
 
-WordList::WordList(int wordLength)
+FWordList::FWordList(int wordLength)
 {
 	std::ifstream wordFile(wordFileName);
 	std::string word;
@@ -14,8 +14,7 @@ WordList::WordList(int wordLength)
 		// do nothing
 	}
 
-	// Read each line in the file
-	while (std::getline(wordFile, word))
+	while (std::getline(wordFile, word)) // Read each line in the file
 	{
 		if (word.length() == wordLength)
 		{
@@ -35,16 +34,15 @@ WordList::WordList(int wordLength)
 				}
 			}
 
-			// If it's a good word, add it to the list.
 			if (isValid)
 			{
-				words.push_back(word);
+				words.push_back(word); // If it's a good word, add it to the list.
 			}
 		}
 	}
 }
 
-std::string WordList::getRandomWord()
+std::string FWordList::getRandomWord()
 {
 	int index = rand() % words.size();
 	return words[index];
