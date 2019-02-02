@@ -85,3 +85,29 @@ EDifficulty FTerminalGame::ChooseDifficulty()
 
 	return EDifficulty::Average;
 }
+
+int FTerminalGame::SubmitGuess(std::string playerGuess)
+{
+	int likeness = 0;
+
+	// if playerGuess NOT in the list of valid guesses
+		// return -1?
+
+	for (auto Character : playerGuess)
+	{
+		Character = toupper(Character);
+	}
+
+	// for every character in Guess, compare it to the secret word
+	for (int i = 0; i < GetWordLength(); i++)
+	{
+		// if both characters in position [i] are the same
+		if ( toupper( playerGuess[i] ) == secretWord[i] )
+		{
+			// increment (add 1 to) the likeness score
+			likeness++; 
+		}
+	}
+
+	return likeness;
+}

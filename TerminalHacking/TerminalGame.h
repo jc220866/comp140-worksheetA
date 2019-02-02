@@ -16,13 +16,20 @@ private:
 
 };
 
-enum EDifficulty
+enum class EDifficulty
 {
 	Very_Easy,
 	Easy,
 	Average,
 	Hard,
 	Very_Hard
+};
+
+enum class EGuessStatus
+{
+	Invalid,
+	Brackets,
+	OK
 };
 
 
@@ -55,6 +62,8 @@ public:
 	std::string secretWord;
 	std::string PlayerInput;
 
+	int SubmitGuess(std::string playerGuess);
+
 private:
 
 	int wordLength;
@@ -63,3 +72,6 @@ private:
 	std::string oneThroughFive = "12345";
 
 };
+
+// Each word chosen needs a decent likeness score to another word
+// However the likeness can't go too high, it's no fun getting a likeness score of 13 when guessing CONCENTRATION against CONCENTRATING

@@ -3,6 +3,8 @@
 
 FTerminalGame game; // Initialize game
 
+// TODO: Add bracket pairs which have a 1/4 chance to reset tries, otherwise they remove a word (not the secret word) from the screen and the set
+
 int main()
 {
 	do
@@ -32,7 +34,11 @@ void PlayGame()
 {
 	PrintGameScreen();
 
+	std::getline(std::cin, game.PlayerInput);
+	int score = game.SubmitGuess(  game.PlayerInput );
+	std::cout << score;
 	// TODO: implement the rest of the game
+
 
 	return;
 }
