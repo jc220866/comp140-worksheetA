@@ -74,7 +74,12 @@ void AddDummyWords(FWordList wordList)
 
 		likeness = CompareLikeness(newWord, ourWord);
 
-		if ((threshold.first < likeness) && (likeness < threshold.second) && bNewWordIsUnique(newWord))
+		if (game.bSuffixRule)
+		{
+			likeness -= CheckWordForCommonSuffixes(newWord);
+		}
+
+		if ((threshold.first <= likeness) && (likeness <= threshold.second) && bNewWordIsUnique(newWord))
 		{
 			game.activeWords.push_back(newWord);
 
@@ -95,10 +100,63 @@ std::string SelectRandomGameWord()
 // Returns two integers, the minimum and maximum likeness a new word can have to be added to the list.
 std::pair<int, int> CalculateLikenessThreshold()
 {
-	int minLikeness = 1;
-	int maxLikeness = 3;
+	int lowerPercentage = 33; // newWord must be at least XX% likeness to the current 'ourWord'
+	int upperPercentage = 66; // newWord can be at most XX% likeness to the current 'ourWord'
+
+	switch(game.difficulty)
+	{
+	case EDifficulty::Very_Easy:
+		game.bSuffixRule = false;
+		lowerPercentage = 50; 
+		upperPercentage = 75;
+		break;
+
+	case EDifficulty::Easy:
+		game.bSuffixRule = false;
+		lowerPercentage = 33;
+		upperPercentage = 66;
+		break;
+
+	case EDifficulty::Average:
+		game.bSuffixRule = false;
+		lowerPercentage = 33;
+		upperPercentage = 50;
+		break;
+
+	case EDifficulty::Hard:
+		game.bSuffixRule = true;
+		lowerPercentage = 33;
+		upperPercentage = 66;
+		break;
+
+	case EDifficulty::Very_Hard:
+		game.bSuffixRule = true;
+		lowerPercentage = 35;
+		upperPercentage = 69;
+		break;
+	}
+
+	int minLikeness = int( (game.GetWordLength() * lowerPercentage) / 100);
+	int maxLikeness = int( (game.GetWordLength() * upperPercentage) / 100);
+
+	std::cout << "\n\n" << minLikeness << std::endl << maxLikeness;
 
 	return std::make_pair(minLikeness, maxLikeness);
+}
+
+// if 'ting', 'tion' or 'ally' found in the word, return 2 (to reduce likeness by 2 points).
+int CheckWordForCommonSuffixes(std::string newWord)
+{
+	// Make sure the strings are capital letters!
+	bool tion = (newWord.find("TION") != std::string::npos);
+	bool ting = (newWord.find("TING") != std::string::npos);
+	bool ally = (newWord.find("ALLY") != std::string::npos);
+
+	if (tion || ting || ally)
+	{
+		return 2;
+	}
+	return 0;
 }
 
 bool bNewWordIsUnique(std::string newWord)

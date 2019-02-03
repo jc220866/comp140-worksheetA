@@ -8,7 +8,7 @@ Current algorithm for choosing the game words:
 // Randomly choose a word from the "Text File Words" vector to be the secretWord (depending on wordLength = X)
 // Continue to randomly choose X long words from "Text File Words" until the "Game Words" set is full
 
-My idea for an algorithm:
+My idea for an algorithm (in main.cpp's AddDummyWords(FWordlist wordList) function:
 
 // Randomly choose a word from the "Text File Words" vector to be the secretWord (depending on wordLength = X)
 
@@ -28,3 +28,11 @@ For that reason, it's a good idea to also:
 // do
 	// randomly select and compare words, adding to the "Game Words" set if of suitable length and likeness
 // while the "Game Words" set is not full
+
+
+EDIT:
+
+While implementing the algorithm, I noticed an unsatisfyingly high amount of 'ing', 'tion' and 'ally' words in the higher difficulties, so I'll also implement an algorithm to reduce those words.
+
+// if we see a tion, ing or lly in the word
+	// reduce likeness by 2

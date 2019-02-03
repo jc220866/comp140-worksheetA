@@ -42,6 +42,7 @@ void AddSecretWord(FWordList wordList);
 void AddDummyWords(FWordList wordList);
 std::string SelectRandomGameWord();
 std::pair<int, int> CalculateLikenessThreshold();
+int CheckWordForCommonSuffixes(std::string newWord);
 bool bNewWordIsUnique(std::string newWord);
 void PlayGame();
 void PrintGameScreen();
@@ -62,6 +63,9 @@ public:
 
 	FTerminalGame(); // Constructor
 	void Reset( EDifficulty difficulty );
+
+	// Reduces amount of 'ing', 'tion' and 'ally' words in higher difficulties
+	bool bSuffixRule;
 
 	std::string secretWord;
 
