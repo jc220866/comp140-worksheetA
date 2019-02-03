@@ -47,31 +47,19 @@ void AddSecretWord(FWordList wordList)
 
 	// Put the secret word in the set
 	game.activeWords.push_back(game.secretWord);
-
-
-
-	// Display secret word at the top of the screen
-	std::cout << "Secret word: " << game.secretWord << std::endl << std::endl;
 }
 
 void AddDummyWords(FWordList wordList)
 {
+	int likeness;
+	std::pair<int, int> threshold = CalculateLikenessThreshold();
 	std::string newWord;
 	std::string ourWord;
 
-	int likeness;
-	std::pair<int, int> threshold = CalculateLikenessThreshold();
-
 	do 
 	{
-		// Randomly select another X long word from "Text File Words", we'll call it "newWord"
-			// Randomly select one of the words currently in "Game Words"*
-			// Compare this selected word to the newWord, incrementing "likeness" for each letter in common
-			// if "likeness" is within a certain threshold**, add it to "Game Words"
-
 		newWord = wordList.chooseRandomWord();
 		ourWord = SelectRandomGameWord();
-
 		likeness = CompareLikeness(newWord, ourWord);
 
 		if (game.bSuffixRule)
@@ -82,13 +70,9 @@ void AddDummyWords(FWordList wordList)
 		if ((threshold.first <= likeness) && (likeness <= threshold.second) && bNewWordIsUnique(newWord))
 		{
 			game.activeWords.push_back(newWord);
-
-			std::cout << ourWord << " - ";
 		}
 	}
 	while ( game.activeWords.size() < game.GetNumberOfWords() );
-
-	std::cout << std::endl;
 }
 
 std::string SelectRandomGameWord()
@@ -135,11 +119,8 @@ std::pair<int, int> CalculateLikenessThreshold()
 		upperPercentage = 69;
 		break;
 	}
-
 	int minLikeness = int( (game.GetWordLength() * lowerPercentage) / 100);
 	int maxLikeness = int( (game.GetWordLength() * upperPercentage) / 100);
-
-	std::cout << "\n\n" << minLikeness << std::endl << maxLikeness;
 
 	return std::make_pair(minLikeness, maxLikeness);
 }
