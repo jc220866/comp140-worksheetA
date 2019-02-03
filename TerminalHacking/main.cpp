@@ -213,12 +213,6 @@ void CheckGuess()
 		return;
 	}
 
-	if ( game.playerInput.length() != game.GetWordLength() ) 
-	{
-		game.guessStatus = EGuessStatus::Wrong_Length;
-		return;
-	}
-
 	for (auto word : game.activeWords) 	// Check if player's guess matches any of the valid words
 	{
 		if (word == game.playerInput)
@@ -227,21 +221,16 @@ void CheckGuess()
 			return;
 		}
 	}
-
 	game.guessStatus = EGuessStatus::Invalid;
 }
 
 void CapitalizePlayerGuess()
 {
-	// TODO play with auto&, see if it directly overwrites player input (https://www.fluentcpp.com/2018/03/30/is-stdfor_each-obsolete/)
-
-	std::string caps = "";
-	for (auto c : game.playerInput)
+	// Using auto& does not make a copy of 'c', therefore we are directly overwriting the instance's variable
+	for (auto& c : game.playerInput)
 	{
 		c = toupper(c);
-		caps = caps + c;
 	}
-	game.playerInput = caps;
 }
 
 bool bGuessStartsWithBrackets()
@@ -334,11 +323,6 @@ void HandleGuess()
 
 	case EGuessStatus::Invalid:
 		game.messageToPlayer = ": Invalid guess. Try again.";
-		game.likeness = -1;
-		break;
-
-	case EGuessStatus::Wrong_Length:
-		game.messageToPlayer = ": Incorrect word length. Try again.";
 		game.likeness = -1;
 		break;
 	}
