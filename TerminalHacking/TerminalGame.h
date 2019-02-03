@@ -40,6 +40,9 @@ void PrintIntro();
 void SetupGame();
 void AddSecretWord(FWordList wordList);
 void AddDummyWords(FWordList wordList);
+std::string SelectRandomGameWord();
+std::pair<int, int> CalculateLikenessThreshold();
+bool bNewWordIsUnique(std::string newWord);
 void PlayGame();
 void PrintGameScreen();
 void GetPlayerGuess();
@@ -48,7 +51,7 @@ void CapitalizePlayerGuess();
 bool bGuessStartsWithBrackets();
 bool bGuessEndsWithBrackets();
 void HandleGuess();
-void SubmitGuess();
+int CompareLikeness(std::string word, std::string word2);
 void SubmitBrackets();
 void PrintPostGameFeedback();
 bool bAskToPlayAgain();
@@ -62,10 +65,11 @@ public:
 
 	std::string secretWord;
 
-	/// Create a set to hold the list of words to display to the player, one of them being the secret word.
-	/// Sets are containers that store unique elements, guaranteeing there are no duplicate words.
-	// Set containing the secret word and dummy words to be displayed to the player.
-	std::set<std::string> activeWords;
+	/// Create an unordered set to hold the list of words to display to the player, one of them being the secret word.
+	/// Unordered_ets are containers that store unique elements, guaranteeing there are no duplicate words.
+	/// Being unordered, they are a little faster than standard sets, plus we 
+	// Unordered set containing the secret word and dummy words to be displayed to the player.
+	std::vector<std::string> activeWords;
 
 	int GetWordLength();
 	int GetNumberOfWords();

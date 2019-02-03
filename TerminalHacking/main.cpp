@@ -46,7 +46,7 @@ void AddSecretWord(FWordList wordList)
 	game.secretWord = wordList.chooseRandomWord();
 
 	// Put the secret word in the set
-	game.activeWords.insert(game.secretWord);
+	game.activeWords.push_back(game.secretWord);
 
 
 
@@ -56,12 +56,61 @@ void AddSecretWord(FWordList wordList)
 
 void AddDummyWords(FWordList wordList)
 {
-	// Fill the set with other random words
-	while (game.activeWords.size() < game.GetNumberOfWords())
+	std::string newWord;
+	std::string ourWord;
+
+	int likeness;
+	std::pair<int, int> threshold = CalculateLikenessThreshold();
+
+	do 
 	{
-		std::string word = wordList.chooseRandomWord();
-		game.activeWords.insert(word);
+		// Randomly select another X long word from "Text File Words", we'll call it "newWord"
+			// Randomly select one of the words currently in "Game Words"*
+			// Compare this selected word to the newWord, incrementing "likeness" for each letter in common
+			// if "likeness" is within a certain threshold**, add it to "Game Words"
+
+		newWord = wordList.chooseRandomWord();
+		ourWord = SelectRandomGameWord();
+
+		likeness = CompareLikeness(newWord, ourWord);
+
+		if ((threshold.first < likeness) && (likeness < threshold.second) && bNewWordIsUnique(newWord))
+		{
+			game.activeWords.push_back(newWord);
+
+			std::cout << ourWord << " - ";
+		}
 	}
+	while ( game.activeWords.size() < game.GetNumberOfWords() );
+
+	std::cout << std::endl;
+}
+
+std::string SelectRandomGameWord()
+{
+	return game.activeWords[ rand() % game.activeWords.size() ];
+}
+
+// Based on current game.wordLength, higher word lengths increase both the minimum and maximum likeness thresholds
+// Returns two integers, the minimum and maximum likeness a new word can have to be added to the list.
+std::pair<int, int> CalculateLikenessThreshold()
+{
+	int minLikeness = 1;
+	int maxLikeness = 3;
+
+	return std::make_pair(minLikeness, maxLikeness);
+}
+
+bool bNewWordIsUnique(std::string newWord)
+{
+	for (auto ourWord : game.activeWords)
+	{
+		if (ourWord == newWord)
+		{
+			return false;
+		}
+	}
+	return true;
 }
 
 void PlayGame()
@@ -70,6 +119,7 @@ void PlayGame()
 	{
 		PrintGameScreen();
 		GetPlayerGuess();
+		CapitalizePlayerGuess();
 		CheckGuess();
 		HandleGuess();
 	}
@@ -78,6 +128,7 @@ void PlayGame()
 
 void PrintGameScreen()
 {
+	// TODO research more about this 'for each (_ in _)' loop, it is different from and cleaner than 'std::for_each'
 	// Display all words
 	for each (std::string word in game.activeWords)
 	{
@@ -106,7 +157,7 @@ void GetPlayerGuess()
 	std::getline(std::cin, game.playerInput);
 }
 
-// Checks if the guess is in the list of words (or in the list of bracket combos) and capitalizes it.
+// Checks if the guess is in the list of words (or in the list of bracket combos)
 void CheckGuess()
 {
 	if (bGuessStartsWithBrackets() && bGuessEndsWithBrackets())
@@ -117,25 +168,25 @@ void CheckGuess()
 		return;
 	}
 
-	CapitalizePlayerGuess();
-
 	if ( game.playerInput == game.secretWord )
 	{
 		game.guessStatus = EGuessStatus::Winner;
 		return;
 	}
 
-	if ( game.playerInput.length() != game.GetWordLength() )
+	if ( game.playerInput.length() != game.GetWordLength() ) 
 	{
 		game.guessStatus = EGuessStatus::Wrong_Length;
 		return;
 	}
 
-	// Simplest way of checking if a specific element is in a set or not
-	if ( game.activeWords.count( game.playerInput ))
+	for (auto word : game.activeWords) 	// Check if player's guess matches any of the valid words
 	{
-		game.guessStatus = EGuessStatus::OK;
-		return;
+		if (word == game.playerInput)
+		{
+			game.guessStatus = EGuessStatus::OK;
+			return;
+		}
 	}
 
 	game.guessStatus = EGuessStatus::Invalid;
@@ -143,6 +194,8 @@ void CheckGuess()
 
 void CapitalizePlayerGuess()
 {
+	// TODO play with auto&, see if it directly overwrites player input (https://www.fluentcpp.com/2018/03/30/is-stdfor_each-obsolete/)
+
 	std::string caps = "";
 	for (auto c : game.playerInput)
 	{
@@ -218,7 +271,7 @@ void HandleGuess()
 	case EGuessStatus::OK:
 		game.livesLeft--;
 		game.messageToPlayer = ": Likeness = ";
-		SubmitGuess();
+		game.likeness = CompareLikeness(game.playerInput, game.secretWord);
 		break;
 
 	case EGuessStatus::Winner:
@@ -252,20 +305,23 @@ void HandleGuess()
 	}
 }
 
-void SubmitGuess()
+int CompareLikeness(std::string word, std::string word2)
 {
-	game.likeness = 0;
+	if (word.length() != word2.length()) { return 0; }
+
+	int likeness = 0;
 
 	// for every character in Guess, compare it to the secret word
-	for (int i = 0; i < game.GetWordLength(); i++)
+	for (int i = 0; i < word.length(); i++)
 	{
 		// if both characters in position [i] are the same
-		if (toupper(game.playerInput[i]) == game.secretWord[i])
+		if (word[i] == word2[i])
 		{
 			// increment (add 1 to) the likeness score
-			game.likeness++;
+			likeness++;
 		}
 	}
+	return likeness;
 }
 
 void SubmitBrackets()
