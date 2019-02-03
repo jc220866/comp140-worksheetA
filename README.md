@@ -1,5 +1,5 @@
 # comp140-worksheetA
-
+```
 "Text File Words" refers to the huge vector of words gathered from the text file
 "Game Words" will refer to the small set of words chosen randomly from "Text File Words"
 
@@ -36,3 +36,4 @@ While implementing the algorithm, I noticed an unsatisfyingly high amount of 'in
 
 // if we see a tion, ing or lly in the word
 	// reduce likeness by 2
+```
