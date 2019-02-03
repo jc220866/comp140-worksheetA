@@ -382,7 +382,7 @@ void SubmitBrackets()
 			// Have the PrintGameScreen comb through this removed words list, replacing removed words (and bracket combos) with underscores
 			// TODO keep in mind that in FALLOUT, words (but not bracket combos) wrap around to the next line (even into the second section)
 				// For this reason, whatever we print will have to be completely separate from what really exists
-				// We will have to just print everything one character at a time (oh if only I could delay stuff by a millisecond)
+				// We will have to just print everything one character at a time (oh if only I could delay stuff by a millisecond) (wow I can)
 
 	// Otherwise
 		//we'll reset the player's lives back to 4.

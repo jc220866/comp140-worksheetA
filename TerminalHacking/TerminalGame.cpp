@@ -95,5 +95,5 @@ void FTerminalGame::Reset( EDifficulty difficulty )
 	}
 
 	// TODO random selection for word length based on difficulty thresholds
-	// TODO if lower bound of word length, choose upper bound of word count and vice versa (or average : average)
+	// if lower bound of word length, choose upper bound of word count and vice versa (or average : average)
 }
