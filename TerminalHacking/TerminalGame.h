@@ -51,6 +51,7 @@ void CapitalizePlayerGuess();
 bool bGuessStartsWithBrackets();
 bool bGuessEndsWithBrackets();
 void HandleGuess();
+void RemoveUsedWord();
 int CompareLikeness(std::string word, std::string word2);
 void SubmitBrackets();
 void PrintPostGameFeedback();

@@ -9,8 +9,9 @@
 
 #include <iostream>
 #include <fstream>
-#include <vector>
+#include <vector>	
 #include <string>
-#include <time.h>
-#include <thread>
-#include <chrono>
+#include <time.h>	// For seeding the rand() function with time
+#include <thread>	// For manipulating the speed of std::cout
+#include <chrono>	// For specifying time, used with <thread>
+#include <algorithm>// For shuffling the vector of words before printing

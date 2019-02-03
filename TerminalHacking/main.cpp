@@ -38,6 +38,9 @@ void SetupGame()
 
 	AddSecretWord(wordList);
 	AddDummyWords(wordList);
+
+	// shuffle the words once so that the answer is not on top
+	std::random_shuffle(game.activeWords.begin(), game.activeWords.end());
 }
 
 void AddSecretWord(FWordList wordList)
@@ -167,6 +170,7 @@ void PlayGame()
 
 void PrintGameScreen()
 {
+
 	// TODO research more about this 'for each (_ in _)' loop, it is different from and cleaner than 'std::for_each'
 	// Display all words
 	for each (std::string word in game.activeWords)
@@ -177,11 +181,10 @@ void PrintGameScreen()
 		std::this_thread::sleep_for(std::chrono::milliseconds(50));
 	}
 
-	std::cout << game.playerInput << game.messageToPlayer;
+	std::cout << std::endl << game.playerInput << game.messageToPlayer;
 	if (game.likeness >= 0) { std::cout << game.likeness; }
-	std::cout << std::endl;
 
-	std::cout << "Lives left: " << game.livesLeft << std::endl;
+	std::cout << std::endl << "Lives left: " << game.livesLeft << std::endl;
 
 	// TODO add a new lingering message for each bracket combo or valid guess, don't add a new message for each invalid guess
 		// This could be accomplished by incrementing a 'line number' integer every new line
@@ -194,6 +197,8 @@ void GetPlayerGuess()
 	std::cout << "Your guess: ";
 
 	std::getline(std::cin, game.playerInput);
+
+	std::cout << std::endl;
 }
 
 // Checks if the guess is in the list of words (or in the list of bracket combos)
@@ -300,6 +305,7 @@ void HandleGuess()
 		game.livesLeft--;
 		game.messageToPlayer = ": Likeness = ";
 		game.likeness = CompareLikeness(game.playerInput, game.secretWord);
+		RemoveUsedWord();
 		break;
 
 	case EGuessStatus::Winner:
@@ -325,6 +331,18 @@ void HandleGuess()
 		game.messageToPlayer = ": Invalid guess. Try again.";
 		game.likeness = -1;
 		break;
+	}
+}
+
+// Once the player has guessed a valid word, remove it from the game
+void RemoveUsedWord()
+{
+	for (int i = 0; i < game.activeWords.size(); i++)
+	{
+		if (game.activeWords[i] == game.playerInput)
+		{
+			game.activeWords.erase( game.activeWords.begin() + i );
+		}
 	}
 }
 
@@ -373,14 +391,16 @@ void SubmitBrackets()
 
 void PrintPostGameFeedback()
 {
+	std::cout << game.playerInput << game.messageToPlayer;
+	if (game.guessStatus == EGuessStatus::OK) std::cout << game.likeness;
+	std::cout << std::endl;
+
 	if (game.livesLeft > 0)
 	{
-		std::cout << game.playerInput << ": Likeness = " << game.GetWordLength() << std::endl;
 		std::cout << "you the winner" << std::endl;
 	}
 	else
 	{
-		std::cout << game.playerInput << ": Likeness = " << game.likeness << std::endl;
 		std::cout << "Lives left: " << game.livesLeft << std::endl;
 		std::cout << "oof" << std::endl;
 	}
